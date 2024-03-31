@@ -1,4 +1,4 @@
-package DataStructure;
+package org.example.DataStructure;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Domain.TreapTester.GENERATED_MAX_VALUE;
+import static org.example.Domain.TreapTester.GENERATED_MAX_VALUE;
 
 public class Treap<K extends Comparable<K>, V> {
     private TreeElement root;
@@ -201,6 +201,7 @@ public class Treap<K extends Comparable<K>, V> {
                 rows.add(StringUtils.center(
                         String.format("%10.10s", currentElement.key + (":") + currentElement.priority), 10)
                 );
+
                 list.add(currentElement.leftChild);
                 list.add(currentElement.rightChild);
             } else {
@@ -230,15 +231,19 @@ public class Treap<K extends Comparable<K>, V> {
             int numberOfCurrentElements = builtStrings.get(i).size();
 
             for (int j = 0; j < currentElements.size(); j++) {
-                int addedCount = (((numberOfElements / 2) / numberOfCurrentElements)) * 10;
-                if(j == 0){
-                    addedCount = addedCount/2;
+                int addedCount = ((((numberOfElements / numberOfCurrentElements) / 2)) * 10 / 2);
+
+                for (int k = i + 1; k < builtStrings.size(); k++) {
+                    int numberOfNextElements = builtStrings.get(k).size();
+                    if (numberOfNextElements > 0) {
+                        addedCount += (((numberOfElements / numberOfNextElements) / 2)) * 10 / 2;
+                    }
                 }
 
                 resultBuilder
                         .append(" ".repeat(addedCount))
-                        .append(currentElements.get(j));
-                       // .append(" ".repeat(addedCount));
+                        .append(currentElements.get(j))
+                        .append(" ".repeat(addedCount));
             }
             resultBuilder.append('\n');
         }

@@ -1,0 +1,10 @@
+Praha 10000
+Brno 1234
+Olomouc 5687
+Hradec 25254
+Ostrava 45
+Plzeň 45
+PCE 5894
+Aš 8799
+Most 7897
+Žatec 87989

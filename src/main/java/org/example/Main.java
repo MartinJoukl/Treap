@@ -1,7 +1,10 @@
 package org.example;
 
-import DataStructure.Treap;
-import Domain.GenerableLong;
+import org.example.DataStructure.Treap;
+import org.example.Domain.Municipality;
+import org.example.Domain.Persistence;
+
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -25,6 +28,8 @@ public class Main {
 
 
         System.out.println(treap);
-        System.out.println("l");
+        List<Municipality> municipalities = Persistence.loadFromFile("testMunicipalities.txt");
+        Persistence.saveToFile(null,"");
+        System.out.println("a");
     }
 }

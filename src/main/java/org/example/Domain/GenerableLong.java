@@ -1,4 +1,4 @@
-package Domain;
+package org.example.Domain;
 
 import java.util.Objects;
 
