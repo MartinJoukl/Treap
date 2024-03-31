@@ -19,6 +19,9 @@ public class Main {
         treap.insert("E", 50);
         treap.insert("T", 50);
         treap.insert("A", 50);
+        treap.insert("XX", 50);
+        treap.insert("XY", 50);
+        treap.insert("XZ", 50);
 
 
         System.out.println(treap);

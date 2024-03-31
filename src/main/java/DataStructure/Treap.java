@@ -5,7 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
+
+import static Domain.TreapTester.GENERATED_MAX_VALUE;
 
 public class Treap<K extends Comparable<K>, V> {
     private TreeElement root;
@@ -49,11 +50,11 @@ public class Treap<K extends Comparable<K>, V> {
     public V insert(K key, V value) {
         count++;
         if (root == null) {
-            root = new TreeElement(key, value, RandomUtils.nextLong(), null);
+            root = new TreeElement(key, value, RandomUtils.nextLong(0, GENERATED_MAX_VALUE), null);
             return root.data;
         }
         TreeElement parent = getLastPossibleElement(key);
-        TreeElement insertedElement = new TreeElement(key, value, RandomUtils.nextLong(), parent);
+        TreeElement insertedElement = new TreeElement(key, value, RandomUtils.nextLong(0, GENERATED_MAX_VALUE), parent);
 
         insertElementToCorrectSide(parent, insertedElement);
 
@@ -197,11 +198,13 @@ public class Treap<K extends Comparable<K>, V> {
             TreeElement currentElement = list.remove(0);
             gotElements++;
             if (currentElement != null) {
-                rows.add(String.format("%25s", StringUtils.center(currentElement.key + (" : ") + currentElement.priority, 25)));
+                rows.add(StringUtils.center(
+                        String.format("%10.10s", currentElement.key + (":") + currentElement.priority), 10)
+                );
                 list.add(currentElement.leftChild);
                 list.add(currentElement.rightChild);
             } else {
-                rows.add(String.format("%25s", StringUtils.center("----", 25)));
+                rows.add(String.format("%10.10s", StringUtils.center("----", 10)));
                 numberOfNullsInCurrentRow++;
                 //Add virtual filling nulls
                 list.add(null);
@@ -220,14 +223,22 @@ public class Treap<K extends Comparable<K>, V> {
             }
         }
         StringBuilder resultBuilder = new StringBuilder();
+        int numberOfElements = builtStrings.get(builtStrings.size() - 1).size();
+
         for (int i = 0; i < builtStrings.size(); i++) {
             List<String> currentElements = builtStrings.get(i);
+            int numberOfCurrentElements = builtStrings.get(i).size();
+
             for (int j = 0; j < currentElements.size(); j++) {
-                int numberOfSpaces;
-                numberOfSpaces = (builtStrings.size() - 1 - i) * 25;
-                resultBuilder.
-                        append(" ".repeat(numberOfSpaces)).
-                        append(currentElements.get(j));
+                int addedCount = (((numberOfElements / 2) / numberOfCurrentElements)) * 10;
+                if(j == 0){
+                    addedCount = addedCount/2;
+                }
+
+                resultBuilder
+                        .append(" ".repeat(addedCount))
+                        .append(currentElements.get(j));
+                       // .append(" ".repeat(addedCount));
             }
             resultBuilder.append('\n');
         }
