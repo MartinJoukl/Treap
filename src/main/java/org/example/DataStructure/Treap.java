@@ -186,6 +186,8 @@ public class Treap<K extends Comparable<K>, V> {
         List<TreeElement> list = new ArrayList<>();
         if (root != null) {
             list.add(root);
+        } else {
+            return "";
         }
         int numberOfElementsInRow = 1;
         int numberOfNullsInCurrentRow = 0;

@@ -1,15 +1,25 @@
 package org.example.Domain;
 
-import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.example.DataStructure.Treap;
 
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TreapTester {
+    private static final long INITIAL_MAX_VALUE = Long.MAX_VALUE;
     public static long generatedMaxValue = Long.MAX_VALUE;
+    private Treap<String, Municipality> userTreap;
+
+    public TreapTester(){
+        this.userTreap = new Treap<>();
+    }
+
+    public void resetTreap() {
+        userTreap = new Treap<>();
+    }
 
     public void performVisualTest() {
         Random random = new SecureRandom();
@@ -61,14 +71,18 @@ public class TreapTester {
     }
 
     public void performTestAndCollectStats() throws IOException {
+        if (generatedMaxValue != INITIAL_MAX_VALUE) {
+            toggleReduceKeySpace();
+        }
+
         double[] heights = new double[10_000];
         double[] comulativeAvg = new double[10_000];
         double maxHeigth;
         double avgHeight;
         double minHeight;
         double mode;
-        DescriptiveStatistics stats = new DescriptiveStatistics();
-        for (int i = 0; i < 100; i++) {
+        Persistence.deleteFolder("randomTests");
+        for (int i = 0; i < heights.length; i++) {
             if ((i + 1) % 200 == 0) {
                 System.out.println("Pokus číslo: " + i);
             }
@@ -77,14 +91,14 @@ public class TreapTester {
             Persistence.saveMunicipalitiesToFile(municipalityList, "randomTests/inputs/randomGenerated1023Municipalities" + i + ".txt", true);
             for (Municipality municipality : municipalityList) {
                 testedTreap.insert(municipality.getNazevObce(), municipality);
-                heights[i] = testedTreap.getTreeDepth();
-                stats.addValue(heights[i]);
             }
+            heights[i] = testedTreap.getTreeDepth();
         }
-        maxHeigth = stats.getMax();
-        avgHeight = stats.getMean();
-        minHeight = stats.getMin();
-        mode = StatUtils.mode(heights)[0];
+        maxHeigth = Arrays.stream(heights).max().getAsDouble();
+        avgHeight = Arrays.stream(heights).average().getAsDouble();
+        minHeight = Arrays.stream(heights).min().getAsDouble();
+        mode = calculateMode(heights);
+
         double cumulativeSum = 0;
         for (int i = 0; i < heights.length; i++) {
             cumulativeSum += heights[i];
@@ -97,5 +111,43 @@ public class TreapTester {
         statString += "Modus: " + mode + "\n";
         statString += "Komulativní průměry: " + Arrays.toString(comulativeAvg) + "\n";
         Persistence.saveStringToFile(statString, "randomTests/stats.txt", true);
+    }
+
+    private double calculateMode(double[] heights) {
+        // Collect elements into a map with their frequencies
+        Map<Double, Long> frequencyMap = Arrays.stream(heights)
+                .boxed()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        Map.Entry<Double, Long> modeEntry = frequencyMap.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .orElseThrow(IllegalStateException::new);
+
+        return modeEntry.getKey();
+    }
+
+    public String getTreapAsString() {
+        return userTreap.toString();
+    }
+
+    public void addToTreap(String municipalityName, int inhabitants) {
+        Municipality municipality = new Municipality(municipalityName, inhabitants);
+        userTreap.insert(municipality.getNazevObce(), municipality);
+    }
+
+    public void toggleReduceKeySpace() {
+        if (generatedMaxValue == INITIAL_MAX_VALUE) {
+            generatedMaxValue = 9999;
+        } else {
+            generatedMaxValue = INITIAL_MAX_VALUE;
+        }
+    }
+
+    public void deleteFromTreap(String municipalityName) {
+        userTreap.delete(municipalityName);
+    }
+
+    public Municipality findElementInHeap(String municipalityName) {
+        return userTreap.find(municipalityName);
     }
 }

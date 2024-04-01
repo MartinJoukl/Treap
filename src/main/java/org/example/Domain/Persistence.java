@@ -29,7 +29,10 @@ public class Persistence {
     }
 
     public static void saveMunicipalitiesToFile(List<Municipality> municipalities, String file, boolean force) throws IOException {
-        if (!force && Files.exists(Path.of(file))) {
+        Path path = Path.of(file);
+        Files.createDirectories(path.getParent());
+
+        if (!force && Files.exists(path)) {
             throw new IOException();
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
@@ -45,10 +48,12 @@ public class Persistence {
     public static void deleteFolder(String directoryName) throws IOException {
         Path pathToBeDeleted = Path.of(directoryName);
 
-        Files.walk(pathToBeDeleted)
-                .sorted(Comparator.reverseOrder())
-                .map(Path::toFile)
-                .forEach(File::delete);
+        if (Files.exists(pathToBeDeleted)) {
+            Files.walk(pathToBeDeleted)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        }
     }
 
     public static void saveStringToFile(String stringToSave, String file, boolean force) throws IOException {
