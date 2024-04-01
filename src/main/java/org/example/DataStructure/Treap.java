@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.example.Domain.TreapTester.GENERATED_MAX_VALUE;
+import static org.example.Domain.TreapTester.generatedMaxValue;
 
 public class Treap<K extends Comparable<K>, V> {
     private TreeElement root;
@@ -50,11 +50,11 @@ public class Treap<K extends Comparable<K>, V> {
     public V insert(K key, V value) {
         count++;
         if (root == null) {
-            root = new TreeElement(key, value, RandomUtils.nextLong(0, GENERATED_MAX_VALUE), null);
+            root = new TreeElement(key, value, RandomUtils.nextLong(0, generatedMaxValue), null);
             return root.data;
         }
         TreeElement parent = getLastPossibleElement(key);
-        TreeElement insertedElement = new TreeElement(key, value, RandomUtils.nextLong(0, GENERATED_MAX_VALUE), parent);
+        TreeElement insertedElement = new TreeElement(key, value, RandomUtils.nextLong(0, generatedMaxValue), parent);
 
         insertElementToCorrectSide(parent, insertedElement);
 
@@ -199,13 +199,13 @@ public class Treap<K extends Comparable<K>, V> {
             gotElements++;
             if (currentElement != null) {
                 rows.add(StringUtils.center(
-                        String.format("%10.10s", currentElement.key + (":") + currentElement.priority), 10)
+                        String.format("%.14s", currentElement.key + (":") + currentElement.priority), 14)
                 );
 
                 list.add(currentElement.leftChild);
                 list.add(currentElement.rightChild);
             } else {
-                rows.add(String.format("%10.10s", StringUtils.center("----", 10)));
+                rows.add(String.format("%.14s", StringUtils.center("-".repeat(12), 14)));
                 numberOfNullsInCurrentRow++;
                 //Add virtual filling nulls
                 list.add(null);
@@ -231,12 +231,12 @@ public class Treap<K extends Comparable<K>, V> {
             int numberOfCurrentElements = builtStrings.get(i).size();
 
             for (int j = 0; j < currentElements.size(); j++) {
-                int addedCount = ((((numberOfElements / numberOfCurrentElements) / 2)) * 10 / 2);
+                int addedCount = ((((numberOfElements / numberOfCurrentElements) / 2)) * 14 / 2);
 
                 for (int k = i + 1; k < builtStrings.size(); k++) {
                     int numberOfNextElements = builtStrings.get(k).size();
                     if (numberOfNextElements > 0) {
-                        addedCount += (((numberOfElements / numberOfNextElements) / 2)) * 10 / 2;
+                        addedCount += (((numberOfElements / numberOfNextElements) / 2)) * 14 / 2;
                     }
                 }
 
@@ -256,6 +256,36 @@ public class Treap<K extends Comparable<K>, V> {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public int getTreeDepth() {
+        List<TreeElement> list = new ArrayList<>();
+        if (root != null) {
+            list.add(root);
+        }
+        int maxDepth = 0;
+
+        while (!list.isEmpty()) {
+            TreeElement currentElement = list.remove(0);
+            if (currentElement.leftChild != null) {
+                list.add(currentElement.leftChild);
+            }
+            if (currentElement.rightChild != null) {
+                list.add(currentElement.rightChild);
+            }
+            int currentDepth = 1;
+            // test only leaves
+            if (isNullOrLeaf(currentElement)) {
+                while (currentElement.parent != null) {
+                    currentDepth += 1;
+                    currentElement = currentElement.parent;
+                }
+                if (currentDepth > maxDepth) {
+                    maxDepth = currentDepth;
+                }
+            }
+        }
+        return maxDepth;
     }
 
     private class TreeElement {

@@ -1,35 +1,62 @@
 package org.example;
 
-import org.example.DataStructure.Treap;
-import org.example.Domain.Municipality;
-import org.example.Domain.Persistence;
+import org.example.Domain.TreapTester;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Treap<String, Integer> treap = new Treap<String, Integer>();
+        TreapTester tester = new TreapTester();
+        boolean exit = false;
+        Scanner sc = new Scanner(System.in);
 
-        treap.insert("H", 10);
-        treap.insert("A", 20);
-        treap.insert("Z", 30);
-        treap.insert("G", 40);
-        treap.delete("A");
-        treap.delete("Z");
-        treap.delete("H");
+        while (!exit) {
+            System.out.println("Zadejte číslo operace:");
+            System.out.println("1) Vizuální test\n2) Proveď test a sesbírej statistiky \n3) Ukonči");
+            int operace = sc.nextInt();
+            switch (operace) {
+                case 1 -> tester.performVisualTest();
+                case 2 -> {
+                    try {
+                        tester.performTestAndCollectStats();
+                    } catch (IOException e) {
+                        System.out.println("Nepodařilo se načíst vstupní soubor s prvky... možná ho bude nutné vytvořit.");
+                    }
+                }
+                case 3 -> exit = true;
+            }
+        }
 
-        treap.insert("B", 50);
-        treap.insert("E", 50);
-        treap.insert("T", 50);
-        treap.insert("A", 50);
-        treap.insert("XX", 50);
-        treap.insert("XY", 50);
-        treap.insert("XZ", 50);
+        tester.performVisualTest();
 
-
-        System.out.println(treap);
-        List<Municipality> municipalities = Persistence.loadFromFile("testMunicipalities.txt");
-        Persistence.saveToFile(null,"");
-        System.out.println("a");
     }
+
+    /*
+    private static void handleNewElementsGeneration(TreapTester tester) {
+        boolean shouldContinue = true;
+        boolean force = false;
+        while (shouldContinue) {
+            try {
+                tester.generateRandomTestElements(force);
+                System.out.println("Nové prvky byly vytvořeny");
+                shouldContinue = false;
+            } catch (IOException e) {
+                System.out.println("Vytváření selhalo... možná již existuje... Zkusit znovu s možným přepsáním? Y/N");
+                char a;
+                Scanner lineScanner = new Scanner(System.in);
+                do {
+                    a = lineScanner.nextLine().toUpperCase().charAt(0);
+                    force = true;
+                } while (a != 'Y' && a != 'N');
+                if (a == 'N') {
+                    force = false;
+                    shouldContinue = false;
+                    System.out.println("Nové prvky nebyly vytvořeny...");
+                }
+            }
+        }
+    }
+
+     */
 }
