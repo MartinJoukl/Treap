@@ -6,7 +6,8 @@ import org.apache.commons.lang3.RandomUtils;
 
 
 public class GenerableLong implements IGenerable<GenerableLong> {
-
+    public static final long INITIAL_MAX_VALUE = Long.MAX_VALUE;
+    public static long generatedMaxValue = Long.MAX_VALUE;
     private final long value;
 
     public GenerableLong(long value) {
@@ -39,6 +40,11 @@ public class GenerableLong implements IGenerable<GenerableLong> {
         return Long.compare(value, otherLong.value);
     }
     public GenerableLong generate() {
-        return new GenerableLong(RandomUtils.nextLong(Long.MIN_VALUE, Long.MAX_VALUE));
+        return new GenerableLong(RandomUtils.nextLong(0, generatedMaxValue));
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
     }
 }

@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.Domain.GenerableLong;
 import org.example.Domain.Municipality;
 import org.example.Domain.TreapTester;
 
@@ -62,7 +63,7 @@ public class Main {
                 }
                 case 8 -> {
                     tester.toggleReduceKeySpace();
-                    System.out.println("Nový rozsah klíčů haldy: " + TreapTester.generatedMaxValue);
+                    System.out.println("Nový rozsah klíčů haldy: " + GenerableLong.generatedMaxValue);
                 }
                 case 9 -> exit = true;
             }

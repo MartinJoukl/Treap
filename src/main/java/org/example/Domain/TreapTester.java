@@ -8,22 +8,22 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.example.Domain.GenerableLong.generatedMaxValue;
+
 public class TreapTester {
-    private static final long INITIAL_MAX_VALUE = Long.MAX_VALUE;
-    public static long generatedMaxValue = Long.MAX_VALUE;
-    private Treap<String, Municipality> userTreap;
+    private Treap<String, Municipality, GenerableLong> userTreap;
 
     public TreapTester(){
-        this.userTreap = new Treap<>();
+        this.userTreap = new Treap<>(new GenerableLong());
     }
 
     public void resetTreap() {
-        userTreap = new Treap<>();
+        userTreap = new Treap<>(new GenerableLong());
     }
 
     public void performVisualTest() {
         Random random = new SecureRandom();
-        Treap<String, Municipality> testedTreap = new Treap<>();
+        userTreap = new Treap<>(new GenerableLong());
         List<Municipality> municipalityList = Persistence.loadFromFile("testMunicipalities.txt");
         System.out.println("Načtena data: " + Arrays.toString(municipalityList.stream().map((Municipality::getNazevObce)).toArray()));
         long previousMaxValue = generatedMaxValue;
@@ -32,8 +32,8 @@ public class TreapTester {
         System.out.println("Testuji vkládání");
         System.out.println("\n");
         for (Municipality municipality : municipalityList) {
-            testedTreap.insert(municipality.getNazevObce(), municipality);
-            System.out.println(testedTreap);
+            userTreap.insert(municipality.getNazevObce(), municipality);
+            System.out.println(userTreap);
             System.out.println("\n");
         }
         System.out.println("Mažu dvě náhodné obce...");
@@ -41,16 +41,16 @@ public class TreapTester {
         Municipality firstToDelete = selectionPool.remove(random.nextInt(selectionPool.size() - 1));
         Municipality secondToDelete = selectionPool.remove(random.nextInt(selectionPool.size() - 1));
         System.out.println("Bude smazána obec: " + firstToDelete.getNazevObce());
-        testedTreap.delete(firstToDelete.getNazevObce());
-        System.out.println(testedTreap.toString());
+        userTreap.delete(firstToDelete.getNazevObce());
+        System.out.println(userTreap.toString());
         System.out.print("\nBude smazána obec: " + secondToDelete.getNazevObce());
-        testedTreap.delete(secondToDelete.getNazevObce());
-        System.out.println(testedTreap.toString());
+        userTreap.delete(secondToDelete.getNazevObce());
+        System.out.println(userTreap.toString());
         System.out.println("\nTest hledání ");
         Municipality toFind = selectionPool.remove(random.nextInt(selectionPool.size() - 1));
         System.out.println("Hledám obec: " + toFind.getNazevObce());
-        Municipality foundMunicipality = testedTreap.find(toFind.getNazevObce());
-        System.out.println(testedTreap.toString());
+        Municipality foundMunicipality = userTreap.find(toFind.getNazevObce());
+        System.out.println(userTreap.toString());
         System.out.println("Byla nalezena obec: " + foundMunicipality.getNazevObce() + " počet obyvatel: " + foundMunicipality.getInhabitants() + "\n");
         generatedMaxValue = previousMaxValue;
     }
@@ -71,7 +71,7 @@ public class TreapTester {
     }
 
     public void performTestAndCollectStats() throws IOException {
-        if (generatedMaxValue != INITIAL_MAX_VALUE) {
+        if (generatedMaxValue != GenerableLong.INITIAL_MAX_VALUE) {
             toggleReduceKeySpace();
         }
 
@@ -86,7 +86,7 @@ public class TreapTester {
             if ((i + 1) % 200 == 0) {
                 System.out.println("Pokus číslo: " + i);
             }
-            Treap<String, Municipality> testedTreap = new Treap<>();
+            Treap<String, Municipality, GenerableLong> testedTreap = new Treap<>(new GenerableLong());
             List<Municipality> municipalityList = generateRandomTestElements();
             Persistence.saveMunicipalitiesToFile(municipalityList, "randomTests/inputs/randomGenerated1023Municipalities" + i + ".txt", true);
             for (Municipality municipality : municipalityList) {
@@ -136,10 +136,10 @@ public class TreapTester {
     }
 
     public void toggleReduceKeySpace() {
-        if (generatedMaxValue == INITIAL_MAX_VALUE) {
+        if (generatedMaxValue == GenerableLong.INITIAL_MAX_VALUE) {
             generatedMaxValue = 9999;
         } else {
-            generatedMaxValue = INITIAL_MAX_VALUE;
+            generatedMaxValue = GenerableLong.INITIAL_MAX_VALUE;
         }
     }
 

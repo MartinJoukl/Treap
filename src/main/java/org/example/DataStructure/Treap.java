@@ -1,16 +1,19 @@
 package org.example.DataStructure;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.example.Domain.IGenerable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.example.Domain.TreapTester.generatedMaxValue;
-
-public class Treap<K extends Comparable<K>, V> {
+public class Treap<K extends Comparable<K>, V, P extends Comparable<P>> {
     private TreeElement root;
     private int count;
+    private final IGenerable<P> generable;
+
+    public Treap(IGenerable<P> generable) {
+        this.generable = generable;
+    }
 
     public V find(K key) {
         TreeElement current = getTreeElement(key);
@@ -50,11 +53,11 @@ public class Treap<K extends Comparable<K>, V> {
     public V insert(K key, V value) {
         count++;
         if (root == null) {
-            root = new TreeElement(key, value, RandomUtils.nextLong(0, generatedMaxValue), null);
+            root = new TreeElement(key, value, generable.generate(), null);
             return root.data;
         }
         TreeElement parent = getLastPossibleElement(key);
-        TreeElement insertedElement = new TreeElement(key, value, RandomUtils.nextLong(0, generatedMaxValue), parent);
+        TreeElement insertedElement = new TreeElement(key, value, generable.generate(), parent);
 
         insertElementToCorrectSide(parent, insertedElement);
 
@@ -291,14 +294,14 @@ public class Treap<K extends Comparable<K>, V> {
     }
 
     private class TreeElement {
-        Long priority;
+        P priority;
         V data;
         K key;
         TreeElement leftChild;
         TreeElement rightChild;
         TreeElement parent;
 
-        public TreeElement(K key, V data, Long priority, TreeElement parent) {
+        public TreeElement(K key, V data, P priority, TreeElement parent) {
             this.priority = priority;
             this.data = data;
             this.key = key;
